@@ -1,0 +1,5 @@
+./testfiles/list/test1/dir1/sample-1.webp
+./testfiles/list/test1/sample-1_1.webp
+./testfiles/list/test1/.DS_Store
+./testfiles/list/test1/sample-5.webp
+./testfiles/list/test1/sample-5 (1).jpg
