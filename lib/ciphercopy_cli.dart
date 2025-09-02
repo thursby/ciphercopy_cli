@@ -24,8 +24,9 @@ Future<void> copyFilesFromList(
   int? threadCount,
 }) async {
   final lines = await File(listFile).readAsLines();
-  final hashFile =
-      '${destDir.endsWith('/') ? destDir.substring(0, destDir.length - 1) : destDir}.sha1';
+  final hashFile = destDir.endsWith('/')
+      ? '${destDir}hashes.sha1'
+      : '$destDir/hashes.sha1';
   await deleteFile(hashFile);
   logger.info('Copying files from list: $listFile to $destDir');
   final files = <Map<String, String>>[];
