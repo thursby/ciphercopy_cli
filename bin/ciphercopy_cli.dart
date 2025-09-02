@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:ansicolor/ansicolor.dart';
 import 'package:args/args.dart';
 import 'package:ciphercopy_cli/ciphercopy_cli.dart' as ciphercopy_cli;
+import 'package:ciphercopy_cli/ciphercopy_logger.dart';
 
 String logo =
     '  ______ ___  __ _________  ________  _____  __\n'
     ' ╱ ___(_) _ ╲╱ ╱╱ ╱ __╱ _ ╲╱ ___╱ _ ╲╱ _ ╲ ╲╱ ╱\n'
     '╱ ╱__╱ ╱ ___╱ _  ╱ _╱╱ , _╱ ╱__╱ (/ ╱ ___╱╲  ╱ \n'
-    '╲___╱_╱_╱  ╱_╱╱_╱___╱_╱│_│╲___╱╲___╱_╱    ╱_╱  \n';
+    '╲___╱_╱_╱  ╱_╱╱_╱___╱_╱│_│╲___╱╲___╱_╱    ╱_╱  \n'
+    'CiPHERC0PY';
 
 void main(List<String> arguments) async {
   final redPen = AnsiPen()..red(bold: true);
@@ -23,7 +25,7 @@ void main(List<String> arguments) async {
       'threads',
       abbr: 't',
       help:
-          'Number of concurrent threads (isolates) to use. Default: number of CPU cores.',
+          'Number of concurrent threads to use. Default: number of CPU cores.',
       valueHelp: 'count',
     );
 
@@ -62,6 +64,7 @@ void main(List<String> arguments) async {
   }
   final listFile = rest[0];
   final destDir = rest[1];
+  final logPath = await initLogging(destDir);
   int? threadCount;
   if (argResults.wasParsed('threads')) {
     final threadStr = argResults['threads'] as String?;
@@ -74,15 +77,24 @@ void main(List<String> arguments) async {
       threadCount = parsed;
     }
   }
+
   try {
+    logger.info(
+      'Starting copy from list: $listFile to $destDir using $threadCount threads.',
+    );
     await ciphercopy_cli.copyFilesFromList(
       listFile,
       destDir,
       threadCount: threadCount,
     );
+    logger.info('Files copied and hashes written successfully.');
     print(greenPen('Files copied and hashes written successfully.'));
   } catch (error, stackTrace) {
+    logger.severe('Error: $error', error, stackTrace);
     print(redPen('Error: $error\n$stackTrace'));
     exit(2);
+  } finally {
+    await shutdownLogging();
+    print('Log written to: $logPath');
   }
 }

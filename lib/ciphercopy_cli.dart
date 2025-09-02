@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:async';
 import 'package:crypto/crypto.dart';
-import 'package:logger/logger.dart';
+import 'package:ciphercopy_cli/ciphercopy_logger.dart';
 
 /// Simple Result type for success/failure with error message
 class Result<T> {
@@ -17,7 +17,6 @@ class Result<T> {
 
 /// Copies files listed in [listFile] to [destDir], preserving relative paths as much as possible.
 /// For each file, uses [copyFile] and writes the hash to a single .sha1 file in [destDir].
-Logger logger = Logger();
 
 Future<void> copyFilesFromList(
   String listFile,
@@ -28,7 +27,7 @@ Future<void> copyFilesFromList(
   final hashFile =
       '${destDir.endsWith('/') ? destDir.substring(0, destDir.length - 1) : destDir}.sha1';
   await deleteFile(hashFile);
-  logger.i('Copying files from list: $listFile to $destDir');
+  logger.info('Copying files from list: $listFile to $destDir');
   final files = <Map<String, String>>[];
   for (final line in lines) {
     final trimmed = line.trim();
@@ -81,14 +80,10 @@ Future<void> copyFilesFromList(
       // Log successful copy (extract file path from hash line)
       final parts = msg.split('  ');
       if (parts.length == 2) {
-        logger.i('Copied file: ${parts[1].trim()}');
+        logger.info('Copied file: ${parts[1].trim()}');
       }
     } else if (msg is _CopyFileError) {
-      logger.e(
-        'Error copying file ${msg.file['source']}: ${msg.error}',
-        error: msg.error,
-        stackTrace: msg.stackTrace,
-      );
+      logger.severe('Error copying file ${msg.file['source']}: ${msg.error}');
     }
   }
 
@@ -96,7 +91,7 @@ Future<void> copyFilesFromList(
   if (hashLines.isNotEmpty) {
     final sha1File = File(hashFile);
     await sha1File.writeAsString(hashLines.join(''), mode: FileMode.append);
-    logger.i('Hashes written to $hashFile');
+    logger.info('Hashes written to $hashFile');
   }
 }
 
