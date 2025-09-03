@@ -22,6 +22,7 @@ Future<void> copyFilesFromList(
   String listFile,
   String destDir, {
   int? threadCount,
+  bool saveLists = false,
 }) async {
   final lines = await File(listFile).readAsLines();
   final hashFile = destDir.endsWith('/')
@@ -48,6 +49,8 @@ Future<void> copyFilesFromList(
   final fileQueue = List<Map<String, String>>.from(files);
   final hashLines = <String>[];
   final receivePort = ReceivePort();
+  final copied = <String>[];
+  final errored = <String>[];
   int active = 0;
   bool done = false;
 
@@ -81,10 +84,13 @@ Future<void> copyFilesFromList(
       // Log successful copy (extract file path from hash line)
       final parts = msg.split('  ');
       if (parts.length == 2) {
-        logger.info('Copied file: ${parts[1].trim()}');
+        final copiedPath = parts[1].trim();
+        logger.info('Copied file: $copiedPath');
+        copied.add(copiedPath);
       }
     } else if (msg is _CopyFileError) {
       logger.severe('Error copying file ${msg.file['source']}: ${msg.error}');
+      errored.add(msg.file['source'] ?? '');
     }
   }
 
@@ -93,6 +99,27 @@ Future<void> copyFilesFromList(
     final sha1File = File(hashFile);
     await sha1File.writeAsString(hashLines.join(''), mode: FileMode.append);
     logger.info('Hashes written to $hashFile');
+  }
+
+  if (saveLists) {
+    final copiedFile = File(
+      destDir.endsWith('/') ? '${destDir}copied.txt' : '$destDir/copied.txt',
+    );
+    final erroredFile = File(
+      destDir.endsWith('/') ? '${destDir}errored.txt' : '$destDir/errored.txt',
+    );
+    if (copied.isNotEmpty) {
+      await copiedFile.writeAsString(copied.join('\n') + '\n');
+      logger.info('Copied file list written to ${copiedFile.path}');
+    } else {
+      await copiedFile.writeAsString('');
+    }
+    if (errored.isNotEmpty) {
+      await erroredFile.writeAsString(errored.join('\n') + '\n');
+      logger.info('Errored file list written to ${erroredFile.path}');
+    } else {
+      await erroredFile.writeAsString('');
+    }
   }
 }
 

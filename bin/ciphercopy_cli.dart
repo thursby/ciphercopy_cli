@@ -3,6 +3,7 @@ import 'package:ansicolor/ansicolor.dart';
 import 'package:args/args.dart';
 import 'package:ciphercopy_cli/ciphercopy_cli.dart' as ciphercopy_cli;
 import 'package:ciphercopy_cli/ciphercopy_logger.dart';
+import 'package:path/path.dart' as path;
 
 String logo =
     '  ______ ___  __ _________  ________  _____  __\n'
@@ -27,9 +28,17 @@ void main(List<String> arguments) async {
       help:
           'Number of concurrent threads to use. Default: number of CPU cores.',
       valueHelp: 'count',
+    )
+    ..addFlag(
+      'list',
+      abbr: 'l',
+      negatable: false,
+      help:
+          'Also save lists of copied and errored files in the destination directory.',
     );
 
   ArgResults argResults;
+  var exitCodeToUse = 0;
   try {
     argResults = parser.parse(arguments);
   } catch (e) {
@@ -65,6 +74,7 @@ void main(List<String> arguments) async {
   final listFile = rest[0];
   final destDir = rest[1];
   final logPath = await initLogging(destDir);
+  final saveLists = argResults['list'] as bool;
   int? threadCount;
   if (argResults.wasParsed('threads')) {
     final threadStr = argResults['threads'] as String?;
@@ -86,15 +96,26 @@ void main(List<String> arguments) async {
       listFile,
       destDir,
       threadCount: threadCount,
+      saveLists: saveLists,
     );
     logger.info('Files copied and hashes written successfully.');
     print(greenPen('Files copied and hashes written successfully.'));
   } catch (error, stackTrace) {
     logger.severe('Error: $error', error, stackTrace);
     print(redPen('Error: $error\n$stackTrace'));
-    exit(2);
+    exitCodeToUse = 2;
   } finally {
     await shutdownLogging();
     print('Log written to: $logPath');
+    // Also copy the log into the destination directory
+    try {
+      await Directory(destDir).create(recursive: true);
+      final destLogPath = path.join(destDir, path.basename(logPath));
+      await File(logPath).copy(destLogPath);
+      print('Log copied to: $destLogPath');
+    } catch (e) {
+      print(redPen('Warning: failed to copy log to destination: $e'));
+    }
   }
+  exit(exitCodeToUse);
 }

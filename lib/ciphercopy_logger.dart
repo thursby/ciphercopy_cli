@@ -81,7 +81,7 @@ Future<void> shutdownLogging() async {
 String _compactTimestamp() {
   final now = DateTime.now();
   String two(int n) => n.toString().padLeft(2, '0');
-  return '${now.year}-${two(now.month)}-${two(now.day)}-${two(now.hour)}-${two(now.second)}';
+  return '${now.year}${two(now.month)}${two(now.day)}${two(now.hour)}${two(now.second)}';
 }
 
 String _formatRecord(LogRecord r) {
