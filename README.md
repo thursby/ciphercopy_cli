@@ -1,4 +1,10 @@
-## ciphercopy_cli
+## CiPHERCOPY CLi
+```
+      ______ ___  __ _________  ________  _____  __
+     ╱ ___(_) _ ╲╱ ╱╱ ╱ __╱ _ ╲╱ ___╱ _ ╲╱ _ ╲ ╲╱ ╱
+    ╱ ╱__╱ ╱ ___╱ _  ╱ _╱╱ , _╱ ╱__╱ (/ ╱ ___╱╲  ╱ 
+    ╲___╱_╱_╱  ╱_╱╱_╱___╱_╱│_│╲___╱╲___╱_╱    ╱_╱  
+```
 
 High-performance, multi-threaded file copier for large batches with live per-file progress bars and SHA-1 verification.
 
