@@ -122,28 +122,7 @@ Logging:
 - Slow copies: try reducing `--threads` if I/O is saturated, or increasing it on fast storage
 - Progress garbled: use a terminal with ANSI support and sufficient width
 
-## Development
-
-Run tests:
-
-```sh
-dart test
-```
-
-Format and analyze:
-
-```sh
-dart format .
-dart analyze
-```
-
-Run locally while developing:
-
-```sh
-dart run bin/ciphercopy_cli.dart <list_file> <destination_directory>
-```
-
-# Features To Do
+## Features To Do
 - Verify files
 - Sign hash manifest with HMAC
 - Copy directories (not just file lists)
