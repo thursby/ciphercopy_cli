@@ -99,7 +99,7 @@ void main(List<String> arguments) async {
       saveLists: saveLists,
     );
     logger.info('Files copied and hashes written successfully.');
-    print(greenPen('Files copied and hashes written successfully.'));
+    print(greenPen('\nFiles copied and hashes written successfully.'));
   } catch (error, stackTrace) {
     logger.severe('Error: $error', error, stackTrace);
     print(redPen('Error: $error\n$stackTrace'));

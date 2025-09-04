@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'dart:async';
 import 'package:crypto/crypto.dart';
 import 'package:ciphercopy_cli/ciphercopy_logger.dart';
+import 'package:console_bars/console_bars.dart';
 
 /// Simple Result type for success/failure with error message
 class Result<T> {
@@ -47,12 +48,22 @@ Future<void> copyFilesFromList(
 
   final cpuCount = threadCount ?? Platform.numberOfProcessors;
   final fileQueue = List<Map<String, String>>.from(files);
+  final int totalFiles = fileQueue.length;
+  logger.info('Total files to copy: $totalFiles using $cpuCount threads.');
   final hashLines = <String>[];
   final receivePort = ReceivePort();
   final copied = <String>[];
   final errored = <String>[];
   int active = 0;
   bool done = false;
+
+  final progressBar = FillingBar(
+    desc: "Copying Files",
+    total: totalFiles,
+    time: true,
+    percentage: true,
+    scale: 0.2,
+  );
 
   void startNext() {
     if (fileQueue.isEmpty) {
@@ -73,6 +84,7 @@ Future<void> copyFilesFromList(
 
   await for (final msg in receivePort) {
     if (msg == 'done') {
+      progressBar.increment();
       active--;
       startNext();
       if (fileQueue.isEmpty && active == 0 && !done) {
@@ -94,7 +106,6 @@ Future<void> copyFilesFromList(
     }
   }
 
-  // Write all hash lines at once (or could append as received)
   if (hashLines.isNotEmpty) {
     final sha1File = File(hashFile);
     await sha1File.writeAsString(hashLines.join(''), mode: FileMode.append);
