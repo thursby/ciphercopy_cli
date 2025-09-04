@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:logging/logging.dart';
-import 'package:ansicolor/ansicolor.dart';
 
 final Logger logger = Logger('CipherCopyLogger');
 
