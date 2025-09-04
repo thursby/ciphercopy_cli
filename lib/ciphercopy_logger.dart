@@ -29,31 +29,30 @@ Future<String> initLogging(String destDir) async {
   Logger.root.level = Level.INFO;
   _subscription = Logger.root.onRecord.listen((record) {
     final line = _formatRecord(record);
-    // Console
-    // Colorize output based on log level using ansiart
-    AnsiPen pen;
-    switch (record.level.name) {
-      case 'SEVERE':
-        pen = AnsiPen()..red(bold: true);
-        break;
-      case 'WARNING':
-        pen = AnsiPen()..yellow(bold: true);
-        break;
-      case 'INFO':
-        pen = AnsiPen()..green();
-        break;
-      case 'CONFIG':
-        pen = AnsiPen()..blue();
-        break;
-      case 'FINE':
-      case 'FINER':
-      case 'FINEST':
-        pen = AnsiPen()..gray();
-        break;
-      default:
-        pen = AnsiPen();
-    }
-    stdout.writeln(pen(line));
+    // // Colorize output based on log level using ansiart
+    // AnsiPen pen;
+    // switch (record.level.name) {
+    //   case 'SEVERE':
+    //     pen = AnsiPen()..red(bold: true);
+    //     break;
+    //   case 'WARNING':
+    //     pen = AnsiPen()..yellow(bold: true);
+    //     break;
+    //   case 'INFO':
+    //     pen = AnsiPen()..green();
+    //     break;
+    //   case 'CONFIG':
+    //     pen = AnsiPen()..blue();
+    //     break;
+    //   case 'FINE':
+    //   case 'FINER':
+    //   case 'FINEST':
+    //     pen = AnsiPen()..gray();
+    //     break;
+    //   default:
+    //     pen = AnsiPen();
+    // }
+    // stdout.writeln(pen(line));
     // File
     _fileSink?.writeln(line);
     if (record.error != null) {

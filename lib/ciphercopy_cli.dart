@@ -109,13 +109,13 @@ Future<void> copyFilesFromList(
       destDir.endsWith('/') ? '${destDir}errored.txt' : '$destDir/errored.txt',
     );
     if (copied.isNotEmpty) {
-      await copiedFile.writeAsString(copied.join('\n') + '\n');
+      await copiedFile.writeAsString('${copied.join('\n')}\n');
       logger.info('Copied file list written to ${copiedFile.path}');
     } else {
       await copiedFile.writeAsString('');
     }
     if (errored.isNotEmpty) {
-      await erroredFile.writeAsString(errored.join('\n') + '\n');
+      await erroredFile.writeAsString('${errored.join('\n')}\n');
       logger.info('Errored file list written to ${erroredFile.path}');
     } else {
       await erroredFile.writeAsString('');
