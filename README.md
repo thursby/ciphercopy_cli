@@ -143,3 +143,12 @@ Run locally while developing:
 dart run bin/ciphercopy_cli.dart <list_file> <destination_directory>
 ```
 
+# Features To Do
+- Verify files
+- Sign hash manifest with HMAC
+- Copy directories (not just file lists)
+- Resume interrupted copies
+- Configurable hash algorithms (e.g., SHA-256, MD5)
+- Exclude/include patterns for file selection
+- Cross-platform support improvements (Windows, Linux)
+- Configurable logging verbosity
